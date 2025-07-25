@@ -1,20 +1,39 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express =  require( 'express')
+const dotenv = require("dotenv");
+const cors = require("cors")
+const blogRoutes = require('./routes/blogRoutes');
+const connectDB = require("./database/database");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const app = express();
 
-var app = express();
-
-app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+const corsOptions ={
+    origin: true,
+    credentials: true,
+    optionSuccessStatus: 200,
+}
+
+app.use(cors(corsOptions));
+
+
+dotenv.config();
+
+//connecting database
+connectDB();
+
+
+const PORT = process.env.PORT;
+
+app.listen(PORT, ()=>{console.log(`Server is running on port ${PORT}`)});
+
+//Routes
+app.use('/api/blogs', blogRoutes);
+app.get('/test', (req, res) => {
+  res.json({ message: "hello" });
+});
+
+
 
 module.exports = app;
+
